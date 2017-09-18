@@ -18,8 +18,8 @@ namespace JwtActionFilter.Filters
             var tokens = httprequestheader.GetValues("token");
             var secret ="jhihbi;bi;bkgbkbvsdko'bcvpslpcjxzolvjnmpwljnmvcl;acnopqelicj";
             string token = "";
-            var authorization = actionContext.Request.Headers.Authorization.Scheme;//Authorization token
-            var authorization2 = actionContext.Request.Headers.Authorization.Parameter;
+            var authorization = actionContext.Request.Headers.Authorization.Parameter;//Authorization token
+            var authorization2 = actionContext.Request.Headers.Authorization.Scheme;
             var payload = new Dictionary<string, object>()//測試payload 物件
             {
                 { "sub", "mr.x@contoso.com" },
@@ -31,7 +31,7 @@ namespace JwtActionFilter.Filters
 
             try
             {
-                var jwtObject = Jose.JWT.Decode(
+                var jwtObject = Jose.JWT.Decode<Dictionary<string,object>>(
                     authorization,
                     Encoding.UTF8.GetBytes(secret),
                     JwsAlgorithm.HS256);
