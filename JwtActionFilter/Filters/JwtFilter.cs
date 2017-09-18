@@ -23,7 +23,7 @@ namespace JwtActionFilter.Filters
             var payload = new Dictionary<string, object>()//測試payload 物件
             {
                 { "sub", "mr.x@contoso.com" },
-                { "exp", 1300819380 }
+                { "exp", 13008193805161651 }
             };
             var jwtencoding = Jose.JWT.Encode(payload, Encoding.UTF8.GetBytes(secret), JwsAlgorithm.HS256);
 
