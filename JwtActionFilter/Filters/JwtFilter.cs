@@ -14,52 +14,37 @@ namespace JwtActionFilter.Filters
     {
         public override void OnActionExecuting(System.Web.Http.Controllers.HttpActionContext actionContext)
         {
+            var actionfilter = actionContext.ActionDescriptor.GetCustomAttributes<NoJwtFilter>();//根據actionAtttibute選則是否執行該filter
+            if (actionfilter.Count != 0)
+            {
+                return;
+            }
             var httprequestheader = actionContext.Request.Headers;
-            var tokens = httprequestheader.GetValues("token");
-            var secret ="jhihbi;bi;bkgbkbvsdko'bcvpslpcjxzolvjnmpwljnmvcl;acnopqelicj";
-            string token = "";
-            var authorization = actionContext.Request.Headers.Authorization.Parameter;//Authorization token
-            var authorization2 = actionContext.Request.Headers.Authorization.Scheme;
-            var payload = new Dictionary<string, object>()//測試payload 物件
+            var secret = "jhihbi;bi;bkgbkbvsdko'bcvpslpcjxz5646531osbsgl564564163@#$%vjnmpwljnmvcl;acnopqelicj";
+            var paremeter = actionContext.Request.Headers.Authorization.Parameter;//Authorization token
+            var scheme = actionContext.Request.Headers.Authorization.Scheme;
+            if (paremeter != null && scheme == "Bearer")
             {
-                { "sub", "mr.x@contoso.com" },
-                { "exp", 130081938051616 }
-            };
-            var jwtencoding = Jose.JWT.Encode(payload, Encoding.UTF8.GetBytes(secret), JwsAlgorithm.HS256);
-
-            bool compair = secret.Equals(jwtencoding.ToString());
-
-            try
-            {
-                var jwtObject = Jose.JWT.Decode<Dictionary<string,object>>(
-                    authorization,
-                    Encoding.UTF8.GetBytes(secret),
-                    JwsAlgorithm.HS256);
+                try
+                {
+                    var jwtObject = Jose.JWT.Decode<Dictionary<string, object>>(
+                        paremeter,
+                        Encoding.UTF8.GetBytes(secret),
+                        JwsAlgorithm.HS256);
+                }
+                catch (Exception ex)
+                {
+                    setErrorMessage(actionContext, ex.Message);
+                }
             }
-            catch (Exception ex)
+            else
             {
-                setErrorMessage(actionContext, ex.Message);
-            }
-
-
-            foreach (var item in tokens)
-            {
-                token = item.ToString().Trim();
-            }
-            bool result = (token == "1236") ? true : false;
-            if (!result)
-            {
-                setErrorMessage(actionContext, "errror");
+                setErrorMessage(actionContext,"token error");
             }
         }
         public static void setErrorMessage(System.Web.Http.Controllers.HttpActionContext actionContext, string message)
         {
             actionContext.Response = actionContext.Request.CreateErrorResponse(HttpStatusCode.Unauthorized, message);
-        }
-        public class test
-        {
-            public string id { get; set; }
-            public string obj { get; set; }
         }
     }
 }
